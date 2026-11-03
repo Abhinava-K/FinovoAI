@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'AI Advisor | FinovoAI',
-  description: 'Chat with an AI investment advisor powered by Groq Llama 3.3-70b. Live market data from MFAPI and CoinGecko.',
+  description: 'Chat with an AI investment advisor powered by live market data from MFAPI and CoinGecko.',
 }
 
 export default function AdvisorLayout({ children }: { children: React.ReactNode }) {

@@ -7,13 +7,6 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [],
   },
-  experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'framer-motion'],
-  },
-  devIndicators: {
-    buildActivity: false,
-    appIsrStatus: false,
-  },
 }
 
 export default nextConfig

@@ -14,7 +14,7 @@ This project is split into a decoupled frontend and backend architecture:
 
 ### Backend
 - **Framework:** FastAPI (Python)
-- **AI Engine:** LangGraph (ReAct agent loop) powered by Groq's Llama 3.3-70b
+- **AI Engine:** LangGraph (ReAct agent loop) with specialized financial tools
 - **Data Integrations:** CoinGecko API for real-time cryptocurrency data
 
 ## Key Features

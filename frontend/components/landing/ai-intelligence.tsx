@@ -28,9 +28,9 @@ const capabilities = [
   },
   {
     icon: Zap,
-    title: 'Groq-Powered Inference',
+    title: 'High-Performance Inference',
     description:
-      'We run Llama 3.3-70b on Groq\'s LPU™ hardware — giving you sub-second AI reasoning even on complex multi-tool queries. Fast intelligence, not slow intelligence.',
+      'Engineered for low-latency financial reasoning even on complex multi-tool queries. Fast intelligence, not slow processing.',
     color: 'text-amber-400',
     bg: 'bg-amber-400/10',
     border: 'border-amber-400/20',
@@ -148,7 +148,7 @@ export function AIIntelligence() {
             </div>
             <div className="mt-4 text-center">
               <p className="text-xs text-muted-foreground/60">
-                LangGraph ReAct loop · Groq Llama 3.3-70b · MFAPI + CoinGecko tools
+                LangGraph ReAct loop · Multi-Asset Telemetry · MFAPI + CoinGecko tools
               </p>
             </div>
           </GlassCard>

@@ -10,7 +10,7 @@ const TECH_STACK = [
   { name: 'Next.js 15', desc: 'App Router · TypeScript · React 18', icon: Code2, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20' },
   { name: 'FastAPI',    desc: 'Python · Production-grade REST API', icon: Zap,       color: 'text-amber-400', bg: 'bg-amber-400/10', border: 'border-amber-400/20' },
   { name: 'LangGraph',  desc: 'ReAct Agent · Tool-use reasoning',   icon: GitBranch, color: 'text-violet-400', bg: 'bg-violet-400/10', border: 'border-violet-400/20' },
-  { name: 'Groq AI',    desc: 'Llama 3.3-70b · LPU inference',      icon: BrainCircuit, color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20' },
+  { name: 'AI Core',    desc: 'LangGraph · ReAct Agent Loop',      icon: BrainCircuit, color: 'text-emerald-400', bg: 'bg-emerald-400/10', border: 'border-emerald-400/20' },
   { name: 'MFAPI.in',  desc: '5,000+ mutual funds · Live NAV',      icon: TrendingUp, color: 'text-blue-400', bg: 'bg-blue-400/10', border: 'border-blue-400/20' },
   { name: 'CoinGecko', desc: '100+ crypto assets · Real-time',      icon: Bitcoin,   color: 'text-violet-400', bg: 'bg-violet-400/10', border: 'border-violet-400/20' },
 ]
@@ -36,8 +36,7 @@ export default function AboutPage() {
           How FinovoAI works
         </h1>
         <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          A LangGraph ReAct agent powered by Groq, integrated with live financial data APIs,
-          and wrapped in a production-grade FastAPI backend.
+          A LangGraph ReAct agent integrated with live financial data APIs and wrapped in a production-grade FastAPI backend.
         </p>
       </div>
 
@@ -72,7 +71,7 @@ export default function AboutPage() {
                 <span className="text-sm font-bold text-foreground">AI Reasoning</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Groq&apos;s LPU hardware runs Llama 3.3-70b at sub-second latency. The LangGraph ReAct loop lets the model Reason (form a hypothesis), Act (call a tool), Observe (process the result), and repeat — until it&apos;s confident in its recommendation.
+                Our AI inference engine runs with high-performance response times. The LangGraph ReAct loop lets the model Reason (form a hypothesis), Act (call a tool), Observe (process the result), and repeat — until it&apos;s confident in its recommendation.
               </p>
             </div>
           </div>
