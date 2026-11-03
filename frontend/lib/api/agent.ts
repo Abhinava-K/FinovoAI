@@ -4,7 +4,7 @@ import type { AgentChatRequest, AgentChatResponse } from '@/types/api'
 /**
  * POST /api/agent/chat
  *
- * The backend uses a LangGraph ReAct agent (Groq Llama 3.3-70b) with two tools:
+ * The backend uses a LangGraph ReAct agent with two tools:
  *   - search_mutual_funds_tool: queries MFAPI live, computes inception CAGR
  *   - get_crypto_price_tool: fetches live prices from CoinGecko
  *

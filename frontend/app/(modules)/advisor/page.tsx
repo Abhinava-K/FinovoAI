@@ -6,12 +6,13 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import {
   BrainCircuit, Send, Trash2, Sparkles, TrendingUp, Bitcoin,
-  BarChart3, HelpCircle, Loader2, AlertTriangle, Copy, Check,
+  BarChart3, HelpCircle, Loader2, AlertTriangle, Copy, Check, Download,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { useAgentChat } from '@/hooks/use-agent-chat'
 import { formatRelativeTime } from '@/lib/formatters'
+import { exportChatTranscript } from '@/lib/capsule-export'
 
 // ─── Suggested prompts ────────────────────────────────────────────────────────
 
@@ -188,9 +189,7 @@ export default function AdvisorPage() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
+  // Auto-scroll disabled per user preference
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
@@ -215,33 +214,44 @@ export default function AdvisorPage() {
   const isEmpty = messages.length === 0
 
   return (
-    <div className="container mx-auto px-4 lg:px-6 max-w-4xl flex flex-col" style={{ minHeight: 'calc(100dvh - 10rem)' }}>
+    <div className="container mx-auto px-4 lg:px-6 max-w-4xl flex flex-col h-[calc(100vh-6.5rem)] max-h-[calc(100vh-6.5rem)] overflow-hidden">
 
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex items-center justify-between mb-4 shrink-0">
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="flex items-center justify-between mb-3 shrink-0">
         <div>
           <div className="flex items-center gap-2 mb-0.5">
             <BrainCircuit className="w-4 h-4 text-emerald-400" />
             <span className="text-xs font-semibold text-emerald-400 uppercase tracking-wider">AI Advisor</span>
             <span className="flex h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse ml-1" />
           </div>
-          <h1 className="text-2xl font-black text-foreground tracking-tight">Investment Intelligence</h1>
+          <h1 className="text-xl md:text-2xl font-black text-foreground tracking-tight">Investment Intelligence</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Groq Llama 3.3-70b · Live MFAPI + CoinGecko tools · LangGraph ReAct agent
+            Live MFAPI + CoinGecko tools · LangGraph ReAct Reasoning Agent
           </p>
         </div>
         {messages.length > 0 && (
-          <Button onClick={clearMessages} variant="glass" size="sm" className="gap-2 shrink-0">
-            <Trash2 className="w-3.5 h-3.5" /> Clear
-          </Button>
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              onClick={() => exportChatTranscript(messages)}
+              variant="glass"
+              size="sm"
+              className="gap-2 text-emerald-400 hover:text-emerald-300 border-emerald-500/30 hover:border-emerald-500/50"
+              title="Download conversation transcript as JSON"
+            >
+              <Download className="w-3.5 h-3.5" /> Export Chat (.json)
+            </Button>
+            <Button onClick={clearMessages} variant="glass" size="sm" className="gap-2 shrink-0">
+              <Trash2 className="w-3.5 h-3.5" /> Clear
+            </Button>
+          </div>
         )}
       </motion.div>
 
       {/* Chat area */}
-      <GlassCard variant="elevated" className="flex-1 flex flex-col overflow-hidden min-h-0" style={{ minHeight: '500px' }}>
+      <GlassCard variant="elevated" className="flex-1 flex flex-col overflow-hidden min-h-0 border border-white/[0.08] shadow-2xl relative">
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-5 min-h-0 scrollbar-thin">
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-5 min-h-0 scrollbar-thin">
           {isEmpty ? (
             <EmptyState onSend={handleSuggestion} />
           ) : (
