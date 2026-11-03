@@ -327,3 +327,64 @@ nextjs-portal,
 [data-nextjs-dev-indicator] {
   display: none !important;
 }
+
+/* ─── Custom Sleek Scrollbar ────────────────────────────────────────────── */
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
+}
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* ─── Print-to-PDF Optimization with Watermarks & Timestamps ────────────── */
+.print-only-watermark {
+  display: none;
+}
+
+@media print {
+  /* Hide non-printable navigation, buttons, and decorative elements */
+  nav,
+  header,
+  aside,
+  footer,
+  .no-print,
+  button,
+  input,
+  textarea {
+    display: none !important;
+  }
+
+  body {
+    background: #05091a !important;
+    color: #dde4f1 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Reveal dedicated print watermark and header */
+  .print-only-watermark {
+    display: block !important;
+  }
+
+  /* Avoid cutting charts and tables across pages */
+  .page-break-inside-avoid,
+  .recharts-responsive-container,
+  table {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+
+

@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Bitcoin, ArrowRight, RotateCcw, Shield, AlertTriangle,
-  Info, BarChart3, Zap,
+  Info, BarChart3, Zap, Download,
 } from 'lucide-react'
 import {
   ResponsiveContainer, PieChart, Pie, Cell, Tooltip, AreaChart, Area,
@@ -15,9 +15,11 @@ import {
 import { Button } from '@/components/ui/button'
 import { GlassCard } from '@/components/ui/glass-card'
 import { LoadingScreen } from '@/components/ui/loading-screen'
+import { ReportWatermark } from '@/components/ui/report-watermark'
 import { useCryptoRecommend } from '@/hooks/use-crypto-recommend'
 import { cryptoFormSchema as cryptoSchema, type CryptoFormValues } from '@/lib/validators/crypto'
 import { formatINR, formatINRCompact, interpolateProjection } from '@/lib/formatters'
+import { exportCryptoCapsule } from '@/lib/capsule-export'
 import type { CryptoRecommendResponse } from '@/types/api'
 
 // ─── Coin colour map ──────────────────────────────────────────────────────────
@@ -206,32 +208,100 @@ function CryptoResults({ data, request, onReset }: ResultsProps) {
   const volatilityColor = risk_analysis.volatility === 'Low' ? 'text-emerald-400'
     : risk_analysis.volatility === 'Medium' ? 'text-amber-400' : 'text-red-400'
 
+  const [reportMeta] = useState(() => {
+    const now = new Date()
+    const dateStr = now.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    })
+    const timeStr = now.toLocaleTimeString('en-IN', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true,
+    })
+    return {
+      timestamp: `${dateStr} at ${timeStr}`,
+      certId: 'FNV-' + Math.random().toString(36).substring(2, 8).toUpperCase() + '-' + now.getSeconds(),
+    }
+  })
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.4 }} className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Action Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="text-2xl font-black text-foreground tracking-tight">Your Crypto Portfolio Blueprint</h2>
           <p className="text-sm text-muted-foreground mt-0.5">
             {formatINR(request.amount, true)} · {request.investment_horizon} · max {request.max_drawdown}% drawdown
           </p>
         </div>
-        <Button onClick={onReset} variant="glass" size="sm" className="gap-2">
-          <RotateCcw className="w-3.5 h-3.5" /> New Analysis
-        </Button>
+        <div className="flex items-center gap-2">
+          <ReportWatermark
+            moduleTitle="Crypto Portfolio Blueprint & Projections"
+            investorDetails={`Investor Profile: ₹${request.amount.toLocaleString('en-IN')} Capital · ${request.investment_horizon.toUpperCase()} Horizon · Max ${request.max_drawdown}% Drawdown`}
+            targetElementId="crypto-portfolio-report-content"
+            filenamePrefix="finovo_crypto_portfolio"
+          />
+          <Button
+            onClick={() => exportCryptoCapsule(request, data)}
+            variant="glass"
+            size="sm"
+            className="no-print gap-2 text-violet-400 hover:text-violet-300 border-violet-500/30 hover:border-violet-500/50"
+            title="Download full JSON crypto metadata for offline privacy or future AI rebalancing"
+          >
+            <Download className="w-3.5 h-3.5" /> Save Capsule (.json)
+          </Button>
+          <Button onClick={onReset} variant="glass" size="sm" className="no-print gap-2">
+            <RotateCcw className="w-3.5 h-3.5" /> New Analysis
+          </Button>
+        </div>
       </div>
 
-      {/* Projection summary */}
-      <div className="grid sm:grid-cols-3 gap-4">
+      {/* ─── Printable / Downloadable PDF Report Target Container ─── */}
+      <div id="crypto-portfolio-report-content" className="space-y-6 bg-[#05091a] p-5 sm:p-7 rounded-2xl border border-white/[0.08]">
+        {/* Certified Report Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-white/[0.1]">
+          <div>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-black text-white tracking-tight leading-none">FINOVO AI</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-violet-500/15 border border-violet-400/30 text-violet-400 text-[10px] font-bold tracking-wider uppercase leading-none">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400"></span>
+                VERIFIED ADVISOR
+              </div>
+            </div>
+            <p className="text-sm font-bold text-slate-300 mt-2 leading-normal">
+              Crypto Asset Allocation & Risk Projections
+            </p>
+            <p className="text-xs text-slate-400 mt-0.5 leading-normal">
+              Investor Profile: ₹{request.amount.toLocaleString('en-IN')} Capital · {request.investment_horizon.toUpperCase()} Horizon · Max {request.max_drawdown}% Drawdown
+            </p>
+          </div>
+          <div className="text-left sm:text-right">
+            <p className="text-xs font-medium text-slate-300 leading-normal">
+              Generated: <span className="font-mono font-bold text-sky-400">{reportMeta.timestamp}</span>
+            </p>
+            <p className="text-[11px] font-mono text-slate-400 mt-1 leading-normal">
+              Cert ID: {reportMeta.certId}
+            </p>
+            <p className="text-[10px] text-emerald-400 font-semibold mt-1 leading-normal">
+              ✓ Zero-Knowledge Architecture (0-Database Cloud Retention)
+            </p>
+          </div>
+        </div>
+
+        {/* Projection summary */}
+        <div className="grid sm:grid-cols-3 gap-4">
         {[
           { label: 'Best Case',   value: formatINR(projection.optimistic, true),   cagr: ((Math.pow(projection.optimistic / request.amount, 1 / projection.duration_years) - 1) * 100).toFixed(1), color: 'text-emerald-400' },
           { label: 'Most Likely',     value: formatINR(projection.expected, true),     cagr: ((Math.pow(projection.expected / request.amount, 1 / projection.duration_years) - 1) * 100).toFixed(1), color: 'text-blue-400' },
           { label: 'Worst Case', value: formatINR(projection.conservative, true), cagr: ((Math.pow(projection.conservative / request.amount, 1 / projection.duration_years) - 1) * 100).toFixed(1), color: 'text-amber-400' },
         ].map(({ label, value, cagr, color }) => (
           <GlassCard key={label} variant="default" shine className="p-4 text-center">
-            <p className={`text-2xl font-black ${color} tabular`}>{value}</p>
-            <p className="text-xs text-muted-foreground mt-1">{label} in {projection.duration_years}Y</p>
-            <p className="text-[10px] text-muted-foreground/70 mt-0.5">(~{cagr}% p.a.)</p>
+            <p className={`text-2xl font-black ${color} font-mono tracking-tight leading-tight`}>{value}</p>
+            <p className="text-xs font-semibold text-muted-foreground mt-1.5 leading-snug">{label} in {projection.duration_years}Y</p>
+            <p className="text-[10px] font-mono text-muted-foreground/75 mt-0.5 leading-snug">(~{cagr}% p.a.)</p>
           </GlassCard>
         ))}
       </div>
@@ -383,6 +453,19 @@ function CryptoResults({ data, request, onReset }: ResultsProps) {
         </ResponsiveContainer>
       </GlassCard>
 
+      {/* Compliance and Watermark Footer */}
+      <div className="pt-5 border-t border-white/[0.1] space-y-2">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs font-bold text-slate-300 gap-2">
+          <span>🔒 FINOVOAI VERIFIED ADVISORY • ZERO-KNOWLEDGE ARCHITECTURE</span>
+          <span className="font-mono text-[11px] text-slate-400">STAMP: {reportMeta.timestamp}</span>
+        </div>
+        <p className="text-[10px] text-slate-400 leading-relaxed">
+          Regulatory Disclaimer: This crypto investment advisory summary is generated strictly for educational and portfolio planning purposes.
+          FinovoAI is not a registered financial or crypto asset advisor. Digital asset prices are derived from live quantitative feeds (CoinGecko). Past performance does not guarantee future returns.
+        </p>
+      </div>
+      </div>
+
       {/* Disclaimer */}
       <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/[0.06] border border-amber-500/[0.1]">
         <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
@@ -407,7 +490,7 @@ function ErrorState({ error, onRetry }: { error: Error; onRetry: () => void }) {
         <AlertTriangle className="w-10 h-10 text-red-400 mx-auto mb-4" />
         <h3 className="text-sm font-bold text-foreground mb-2">Recommendation Failed</h3>
         <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-          {error.message || 'Unable to connect to backend. Ensure it is running at localhost:8000.'}
+          {error.message || 'Unable to connect to backend. Ensure the backend service is reachable.'}
         </p>
         <Button onClick={onRetry} size="sm" variant="glass" className="gap-2">
           <RotateCcw className="w-3.5 h-3.5" /> Try Again
